@@ -2,6 +2,8 @@
 
 ...리액트용 모달 정리중...
 
+Vue3 용과 사용법 동일: https://molgga.github.io/jood-v-modal
+
 ```tsx
 // ... Root
 export default function App({ Component, pageProps }: NextAppProps) {
