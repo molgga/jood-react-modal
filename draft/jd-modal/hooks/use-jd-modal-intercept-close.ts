@@ -9,7 +9,7 @@ type ClosedCallback<R = any> = (result?: R) => void;
  */
 export const useJdModalInterceptClose = <R = any>() => {
   let interceptModalRef: JdModalRef | null = null;
-  let closeListener: Subscription | null = null;
+  const closeListener = useRef<Subscription | null>(null);
   const fnClosed = useRef<ClosedCallback<R>>(() => false);
 
   const handleClosed = (result?: R) => {
@@ -21,7 +21,9 @@ export const useJdModalInterceptClose = <R = any>() => {
    */
   const intercept = (modalRef: JdModalRef) => {
     interceptModalRef = modalRef;
-    closeListener = interceptModalRef.observeClosed().subscribe(handleClosed);
+    closeListener.current = interceptModalRef
+      .observeClosed()
+      .subscribe(handleClosed);
   };
 
   /**
@@ -31,13 +33,10 @@ export const useJdModalInterceptClose = <R = any>() => {
     fnClosed.current = callback;
   };
 
-  /**
-   * 해제
-   */
   const dispose = () => {
-    if (closeListener) {
-      closeListener.unsubscribe();
-      closeListener = null;
+    if (closeListener.current) {
+      closeListener.current.unsubscribe();
+      closeListener.current = null;
     }
   };
 

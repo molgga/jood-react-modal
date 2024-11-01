@@ -42,7 +42,7 @@ export const useJdModalEntry = (props: JdModalEntryProps) => {
   const [isClosing, setIsClosing] = useState(false);
   const [modalIndex, setModalIndex] = useState(initialModalIndex || 0);
   const [modalLength, setModalLength] = useState(modalService.modals?.length);
-  const focusTrap = createFocusTrap();
+  const [focusTrap] = useState(() => createFocusTrap());
 
   const classes = useMemo(() => {
     return {
@@ -101,7 +101,7 @@ export const useJdModalEntry = (props: JdModalEntryProps) => {
 
   useEffect(() => {
     // console.log('useJdModalEntrySetup mounted');
-    let listener: Subscription;
+    let listener: Subscription | undefined;
     let animateTimer: any = null;
     const historyStrategy = modalService.historyStrategy.createEntry({
       modalService,
@@ -178,10 +178,11 @@ export const useJdModalEntry = (props: JdModalEntryProps) => {
 
     return () => {
       clearTimeout(animateTimer);
-      listener.unsubscribe();
       focusTrap.dispose();
+      listener?.unsubscribe();
+      listener = undefined;
     };
-  }, [modalRef, modalService, safeTiming, enabledHistoryStrategy]);
+  }, [modalRef, modalService, safeTiming, focusTrap, enabledHistoryStrategy]);
 
   return {
     setModalIndex,

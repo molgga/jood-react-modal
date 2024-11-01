@@ -14,7 +14,7 @@ export const useJdModalFocusTrap = () => {
     setTimeout(() => {
       setWrapperElement(modalRef.panelElement);
     }, 0);
-  }, []);
+  }, [setWrapperElement, modalRef.panelElement]);
 
   return {
     findFocusableElements,

@@ -23,7 +23,6 @@ export const useJdModalAppender = () => {
       setModalRefs(modals);
       clearTimeout(animateTimer);
       animateTimer = null;
-
       if (hasModal) {
         setIsEmptied(false);
       } else {

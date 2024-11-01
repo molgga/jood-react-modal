@@ -31,7 +31,7 @@ export const useJdModalBeforeLeave = (props?: Props) => {
   const modalService = useJdModalService();
   const modalRef = useJdModalRef();
   const fnPrevent = useRef<FnPrevent>(() => false);
-  let holdBeforeLeave = false;
+  const holdBeforeLeave = useRef<boolean>(false);
 
   const setLeaveMessage = (message: string) => {
     leaveMessage = message;
@@ -42,46 +42,55 @@ export const useJdModalBeforeLeave = (props?: Props) => {
   };
 
   // 모달 나가기 핸들
-  const onBeforeUnloadModal = async (evt: ModalPopStateEvent) => {
-    const { current: modalCurrentId } = historyState.getStateOfEvent(
-      modalService.id,
-      evt
-    );
-    const isTop = modalService.isModalRefTop(modalRef.id);
-    if (!isTop) return;
-    if (modalCurrentId === modalRef.id) return;
+  const onBeforeUnloadModal = useCallback(
+    async (evt: ModalPopStateEvent) => {
+      const { current: modalCurrentId } = historyState.getStateOfEvent(
+        modalService.id,
+        evt
+      );
+      const isTop = modalService.isModalRefTop(modalRef.id);
+      if (!isTop) return;
+      if (modalCurrentId === modalRef.id) return;
 
-    const isPrevent = fnPrevent.current();
-    // 컨펌창 때문에 hold 체크, 에디터 변경사항 체크
-    if (!holdBeforeLeave) {
-      if (isPrevent) {
-        holdBeforeLeave = true;
-        evt._preventModalClose = true;
-        history.forward(); // 브라우저는 이미 뒤로가기가 되어서 다시 forwad 시킴.
-        await delay(100);
-        const confirm = window.confirm(leaveMessage); // async 지원시 사용 방법이 복잡해져서 기본 confirm 사용
-        if (!confirm) {
-          holdBeforeLeave = false;
+      const isPrevent = fnPrevent.current();
+      // 컨펌창 때문에 hold 체크, 에디터 변경사항 체크
+      if (!holdBeforeLeave.current) {
+        if (isPrevent) {
+          holdBeforeLeave.current = true;
+          evt._preventModalClose = true;
+          history.forward(); // 브라우저는 이미 뒤로가기가 되어서 다시 forwad 시킴.
+          await delay(100);
+          const confirm = window.confirm(leaveMessage); // async 지원시 사용 방법이 복잡해져서 기본 confirm 사용
+          if (!confirm) {
+            holdBeforeLeave.current = false;
+          } else {
+            modalRef.close();
+          }
         } else {
-          detachBeforeLeave();
           modalRef.close();
-          // history.back();
         }
-      } else {
-        detachBeforeLeave();
-        modalRef.close();
       }
-    }
-  };
+    },
+    [modalService, holdBeforeLeave, leaveMessage, modalRef]
+  );
 
   // 브라우저 핸들
-  const onBeforeUnloadBrowser = (evt: Event) => {
-    const isPrevent = fnPrevent.current();
-    if (isPrevent) {
-      evt.preventDefault();
-      return leaveMessage;
-    }
-  };
+  const onBeforeUnloadBrowser = useCallback(
+    (evt: Event) => {
+      const isPrevent = fnPrevent.current();
+      if (isPrevent) {
+        evt.preventDefault();
+        return leaveMessage;
+      }
+    },
+    [fnPrevent, leaveMessage]
+  );
+
+  const detachBeforeLeave = useCallback(() => {
+    modalRef.detachBeforeLeave();
+    window.removeEventListener('popstate', onBeforeUnloadModal);
+    window.removeEventListener('beforeunload', onBeforeUnloadBrowser);
+  }, [modalRef, onBeforeUnloadModal, onBeforeUnloadBrowser]);
 
   const attachBeforeLeave = useCallback(() => {
     if (modalRef.isAttachedBeforeLeave) return;
@@ -92,20 +101,20 @@ export const useJdModalBeforeLeave = (props?: Props) => {
     if (enabledHistoryStrategy) {
       modalRef.attachBeforeLeave();
     }
-  }, [modalRef]);
-
-  const detachBeforeLeave = useCallback(() => {
-    modalRef.detachBeforeLeave();
-    window.removeEventListener('popstate', onBeforeUnloadModal);
-    window.removeEventListener('beforeunload', onBeforeUnloadBrowser);
-  }, [modalRef]);
+  }, [
+    modalRef,
+    modalService.enabledHistoryStrategy,
+    detachBeforeLeave,
+    onBeforeUnloadBrowser,
+    onBeforeUnloadModal,
+  ]);
 
   useEffect(() => {
     attachBeforeLeave();
     return () => {
       detachBeforeLeave();
     };
-  }, []);
+  }, [attachBeforeLeave, detachBeforeLeave]);
 
   return {
     onPrevent,
