@@ -5,7 +5,7 @@
 Vue3 용과 사용법 동일: https://molgga.github.io/jood-v-modal
 
 ```tsx
-// ... Root
+// ... Root 에 provider 셋팅하기
 export default function App({ Component, pageProps }: NextAppProps) {
   const [modalService] = useState(() => new JdModalService());
   const getLayout = Component.getLayout ?? (({ page }) => page);
@@ -29,19 +29,19 @@ export default function App({ Component, pageProps }: NextAppProps) {
 
 ```tsx
 // ... 모달 여는곳
-function PageComponent() {
-  const modalA = useSampleModalA();
+function SomePage() {
+  const modalA = useSampleModalPayment(); // 모달 기능을 훅으로 만들기
   const modalB = useSampleModalB();
 
   const handleOpenSampleA = () => {
-    modalA.open();
+    modalA.open({ testPass: 'foo' });
   };
 
   const handleOpenSampleB = () => {
     modalB.open();
   };
 
-  // 결과받기
+  // 모달 닫을 때 전달해주는 결과 받기
   modalA.onClosed((result) => {
     console.log('modalA result', result?.testResult);
   });
@@ -57,65 +57,68 @@ function PageComponent() {
     </div>
   );
 }
+
+// ... 동일한 모달 여는 기능이 필요한 다른 어딘가
+function LayoutHeader() {
+  const modalA = useSampleModalPayment();
+  // ...
+}
 ```
 
 ```tsx
-// ... 모달
+// ... 모달 훅으로 만들기
 import {
-  SampleModal,
-  SampleModalData,
-  SampleModalResult,
-} from '../ui/sample-modal';
-import {
-  StackRight,
-  useJdModalInterceptClose,
-  useJdModalService,
+  useJdModalService, // 모달 서비스를 사용하기 위한 훅
+  useJdModalInterceptClose, // 모달 닫을 때 결과 전달 구독을 간단하게 사용하기 위한 훅
+  StackRight, // 오른쪽에서 열기 예
 } from '@/shared/libs/jd-modal';
 
-export interface SampleModalData {
+export interface PaymentModalData {
   testPass?: string;
 }
 
-export interface SampleModalResult {
+export interface PaymentModalResult {
   testResult?: string;
 }
 
-export const useSampleModalB = () => {
+// 모달 - 훅으로
+export const useSampleModalPayment = () => {
   const modalService = useJdModalService();
-  const interceptClose = useJdModalInterceptClose<SampleModalResult>();
-  const open = (data?: SampleModalData) => {
+  const interceptClose = useJdModalInterceptClose<PaymentModalResult>();
+  const open = (data?: PaymentModalData) => {
     const modalRef = modalService.open({
       data,
-      component: <SampleModal />, // 모달로 여는 컴포넌트
+      component: <PaymentModal />, // 모달로 여는 컴포넌트
       openStrategy: new StackRight(), // 모달 여는 방식 결정
       floatingMode: true,
       overlayClose: true,
     });
-    interceptClose.intercept(modalRef);
+    interceptClose.intercept(modalRef); // modalRef 의 닫는 상태 구독(rxjs)
   };
+
+  // 페이지 언마운트 될 때 닫는 예
+  // useEffect(() => {
+  //   return (() => {
+  //     if (modalRef) modalRef.close();
+  //   })
+  // }, [modalRef]);
+
   return {
     open,
-    onClosed: interceptClose.onClosed, // 닫힐 때 결과 전달 받는 기능
+    onClosed: interceptClose.onClosed, // 위에 구독한것 간편하게 콜백으로 제공
   };
 };
-```
 
-```tsx
 // ... 모달 - 컴포넌트
-import { useJdModalRef } from '@/shared/libs/jd-modal';
-
-export function SampleModal() {
-  const modalRef = useJdModalRef<SampleModalResult, SampleModalData>();
-  const { testPass } = modalRef.data || {}; // 모달 열릴 때 전달한 값
-
+export function PaymentModal() {
+  const modalRef = useJdModalRef<PaymentModalResult, PaymentModalData>();
+  const { testPass } = modalRef.data || {}; // 모달 여는곳에서 전달해준 값
   const handleCancel = () => {
-    modalRef.close({ testResult: 'cancel!' }); // 모달 닫으면서 전달
+    modalRef.close({ testResult: 'cancel!' }); // 모달 닫으면서 결과 전달
   };
-
   const handleSave = () => {
-    modalRef.close({ testResult: 'saved!' }); // 모달 닫으면서 전달
+    modalRef.close({ testResult: 'saved!' }); // 모달 닫으면서 결과 전달
   };
-
   return (
     <div>
       <div>모달 열 때 받은것: {testPass}</div>
