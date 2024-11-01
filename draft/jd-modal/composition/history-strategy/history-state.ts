@@ -11,19 +11,29 @@ export function touch(currentServiceId: number, current: number) {
 }
 
 export function getStateOfHistory(currentServiceId: number) {
-  return getStateOf(currentServiceId, window.history.state || {});
+  return getStateOf(
+    currentServiceId,
+    (window.history.state || {}) as HashState
+  );
 }
 
 export function getStateOfEvent(currentServiceId: number, evt: PopStateEvent) {
-  return getStateOf(currentServiceId, evt.state || {});
+  return getStateOf(currentServiceId, (evt.state || {}) as HashState);
 }
 
-export function getStateOf(currentServiceId: number, state: any) {
+interface HashState {
+  jdModal: {
+    serviceId?: number;
+    before?: number;
+    current?: number;
+  };
+}
+
+export function getStateOf(currentServiceId: number, state: HashState) {
   const { jdModal } = state;
   const { serviceId = null, before = null, current = null } = jdModal || {};
   if (currentServiceId === serviceId) {
     return { serviceId, before, current };
-  } else {
-    return { serviceId: null, before: null, current: null };
   }
+  return { serviceId: null, before: null, current: null };
 }

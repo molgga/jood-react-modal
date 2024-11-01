@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { delay } from '../utils';
-import { useJdModalRef, useJdModalService } from '../provider/context';
+import { useJdModalService } from '../provider/use-jd-modal-service';
+import { useJdModalRef } from '../provider/use-jd-modal-ref';
 import { historyState } from '../composition/history-strategy';
 import type { ModalPopStateEvent } from '../composition/history-strategy';
 
 type FnPrevent = () => boolean;
 
-interface Props {
+interface JdModalBeforeLeaveProps {
   leaveMessage?: string;
 }
 
@@ -17,16 +18,8 @@ interface Props {
  *  - async 는 지원하지 않는다.
  *  - true 시 컨펌 확인 과정을 진행한다.
  * - 커스텀 컨펌창은 더이상 지원하지 않고, 기본 window.confirm 을 사용한다.
- *
- * @export
- * @example
- *  const modalBeforeLeave = useJdModalBeforeLeave();
- *  modalBeforeLeave.onPrevent(() => {
- *    const is = 0.5 < Math.random();
- *    return is; // true 시 컨펌창
- *  });
  */
-export const useJdModalBeforeLeave = (props?: Props) => {
+export const useJdModalBeforeLeave = (props?: JdModalBeforeLeaveProps) => {
   let { leaveMessage = '모달을 닫으시겠습니까?' } = props || {};
   const modalService = useJdModalService();
   const modalRef = useJdModalRef();
@@ -60,6 +53,7 @@ export const useJdModalBeforeLeave = (props?: Props) => {
           evt._preventModalClose = true;
           history.forward(); // 브라우저는 이미 뒤로가기가 되어서 다시 forwad 시킴.
           await delay(100);
+          // eslint-disable-next-line no-alert -- resolve
           const confirm = window.confirm(leaveMessage); // async 지원시 사용 방법이 복잡해져서 기본 confirm 사용
           if (!confirm) {
             holdBeforeLeave.current = false;

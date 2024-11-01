@@ -1,7 +1,17 @@
-import type { JdModalRef } from './jd-modal-ref';
+import type { Component, CSSProperties, ReactNode } from 'react';
 import type { OpenStrategy } from '../composition/open-strategy';
+import type { JdModalRef } from './jd-modal-ref';
 
-export type EntryComponentType = any;
+export type ComponentType = Component | ReactNode;
+export type EntryComponentType = ComponentType | EntryNode;
+
+type EntryNode = ({
+  index,
+  modalRef,
+}: {
+  index: number;
+  modalRef: JdModalRef;
+}) => ReactNode;
 
 /**
  * 모달 서비스 config
@@ -19,10 +29,10 @@ export interface ModalState {
 
 /**
  * 모달 옵션
- * @template D 모달로 전달되는 데이터 타입
- * @template C 컴포넌트 타입
+ * <D> 모달로 전달되는 데이터 타입
+ * <C> 컴포넌트 타입
  */
-export interface ModalData<D = any, C = any> {
+export interface ModalData<D = unknown, C = ComponentType> {
   /**
    * 모달로 열려고 하는 컴포넌트
    */
@@ -66,7 +76,7 @@ export interface ModalData<D = any, C = any> {
   /**
    * 모달 패널 css 스타일
    */
-  panelStyle?: any;
+  panelStyle?: CSSProperties;
   /**
    * 오픈시 포커스 엘리먼트
    */
@@ -92,7 +102,7 @@ export enum ModalEventType {
 /**
  * 모달에서 발생하는 이벤트
  */
-export interface ModalEvent {
+export interface ModalEvent<R = unknown, D = unknown, C = unknown> {
   type: ModalEventType;
-  modalRef: JdModalRef;
+  modalRef: JdModalRef<R, D, C>;
 }

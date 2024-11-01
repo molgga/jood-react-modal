@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useJdModalRef } from '../provider/context';
+import { useJdModalRef } from '../provider/use-jd-modal-ref';
 
 /**
  * 모달 포커스 트랩 도우미

@@ -1,10 +1,11 @@
-import { OpenStrategy } from './types';
+import type { OpenStrategy } from './types';
 
 export class StackTop implements OpenStrategy {
   shadow() {
     return {
       pivot: {
-        boxShadow: '0 0 5px rgba(0, 0, 0, 0.02), 0 10px 10px 1px rgba(0, 0, 0, 0.04), 0 3px 3px rgba(0, 0, 0, 0.06)',
+        boxShadow:
+          '0 0 5px rgba(0, 0, 0, 0.02), 0 10px 10px 1px rgba(0, 0, 0, 0.04), 0 3px 3px rgba(0, 0, 0, 0.06)',
       },
     };
   }

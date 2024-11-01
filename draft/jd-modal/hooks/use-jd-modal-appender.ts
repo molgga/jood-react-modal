@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Subscription } from 'rxjs';
-import { useJdModalService } from '../provider/context';
-import { ModalState } from '../core/types';
-import { JdModalRef } from '../core/jd-modal-ref';
+import { useJdModalService } from '../provider/use-jd-modal-service';
+import type { ModalState } from '../core/types';
+import type { JdModalRef } from '../core/jd-modal-ref';
 
 export const useJdModalAppender = () => {
   const modalService = useJdModalService();
@@ -10,19 +10,19 @@ export const useJdModalAppender = () => {
   const [isEmptied, setIsEmptied] = useState(true);
 
   const classes = useMemo(() => {
-    return { isEmptied: isEmptied };
+    return { isEmptied: Boolean(isEmptied) };
   }, [isEmptied]);
 
   useEffect(() => {
-    let animateTimer: any = null;
+    let animateTimer: NodeJS.Timeout | undefined;
     const listener = new Subscription();
 
     const onChangeModalState = (modalState: ModalState) => {
       const { modals } = modalState;
-      const hasModal = !!(modals && modals.length);
+      const hasModal = Boolean(modals && modals.length > 0);
       setModalRefs(modals);
       clearTimeout(animateTimer);
-      animateTimer = null;
+      animateTimer = undefined;
       if (hasModal) {
         setIsEmptied(false);
       } else {

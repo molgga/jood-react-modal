@@ -1,14 +1,14 @@
 import { useEffect, useRef } from 'react';
-import { Subscription } from 'rxjs';
-import { JdModalRef } from '../core/jd-modal-ref';
+import type { Subscription } from 'rxjs';
+import type { JdModalRef } from '../core/jd-modal-ref';
 
-type ClosedCallback<R = any> = (result?: R) => void;
+type ClosedCallback<R = unknown> = (result?: R) => void;
 
 /**
  * 모달 닫힐때 결과 받기용
  */
-export const useJdModalInterceptClose = <R = any>() => {
-  let interceptModalRef: JdModalRef | null = null;
+export const useJdModalInterceptClose = <R = unknown>() => {
+  let interceptModalRef: JdModalRef<R> | null = null;
   const closeListener = useRef<Subscription | null>(null);
   const fnClosed = useRef<ClosedCallback<R>>(() => false);
 
@@ -19,7 +19,7 @@ export const useJdModalInterceptClose = <R = any>() => {
   /**
    * modalRef 옵저버 등록
    */
-  const intercept = (modalRef: JdModalRef) => {
+  const intercept = (modalRef: JdModalRef<R>) => {
     interceptModalRef = modalRef;
     closeListener.current = interceptModalRef
       .observeClosed()

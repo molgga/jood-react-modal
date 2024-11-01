@@ -18,7 +18,7 @@ export const createHashIdReg = (hashId: string): RegExp => {
  * - https://...#modal=1002 = 1002
  */
 export const extractHashId = (str: string): number | null => {
-  const replaced: string = str.replace(/(.*(:?#jd-modal=(\d+)))$/, '$3');
+  const replaced: string = str.replace(/(?:.*(?:#jd-modal=(?:\d+)))$/, '$3');
   const ver = parseInt(replaced);
   if (isNaN(ver)) return null;
   return ver;

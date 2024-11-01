@@ -1,16 +1,16 @@
-import { useEffect, useRef } from 'react';
+import { type ReactNode, useEffect, useRef } from 'react';
 import clsx from 'clsx';
-import { useJdModalEntry } from '../hooks';
-import { JdModalRefContext } from '../provider';
-import { JdModalRef } from '../core';
+import { useJdModalEntry } from '../hooks/use-jd-modal-entry';
+import { JdModalRefContext } from '../provider/use-jd-modal-ref';
+import type { JdModalRef } from '../core/jd-modal-ref';
 import styles from './jd-modal-entry.module.css';
 
-interface Props {
+interface JdModalEntryProps {
   index: number;
   modalRef: JdModalRef;
 }
 
-export const JdModalEntry = ({ index, modalRef }: Props) => {
+export function JdModalEntry({ index, modalRef }: JdModalEntryProps) {
   const refOverlay = useRef<HTMLDivElement>(null);
   const {
     setModalIndex,
@@ -40,24 +40,31 @@ export const JdModalEntry = ({ index, modalRef }: Props) => {
         ref={refModalContainer}
         className={clsx(styles.entry, classes)}
         style={entryStyles.modal}
-        tabIndex={0}
+        role="dialog"
+        aria-modal="true"
+        tabIndex={-1}
       >
         <div
           ref={refOverlay}
           className={styles.overlay}
           style={entryStyles.overlay}
+          role="presentation"
           onClick={onOverlayClick}
-        ></div>
+        >
+          &nbsp;
+        </div>
         <div
           ref={refModalPanel}
           className={styles.panel}
           style={entryStyles.panel}
         >
           <div className={styles.pivot} style={entryStyles.pivot}>
-            <div className={styles.content}>{modalRef.component}</div>
+            <div className={styles.content}>
+              {modalRef.component as ReactNode}
+            </div>
           </div>
         </div>
       </div>
     </JdModalRefContext.Provider>
   );
-};
+}

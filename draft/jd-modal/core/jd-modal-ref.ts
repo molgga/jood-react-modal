@@ -1,28 +1,29 @@
+import type { CSSProperties } from 'react';
 import { Subject } from 'rxjs';
 import { StackNormal, type OpenStrategy } from '../composition/open-strategy';
 import {
   ModalEventType,
   type ModalEvent,
   type ModalData,
+  type ComponentType,
   type EntryComponentType,
   type OpenendActiveElement,
 } from './types';
 
 /**
  * 하나의 모달 (정보)
- * @export
- * @class JdModalRef
- * @template R 모달의 결과 타입
- * @template D 모달로 전달되는 데이터 타입
- * @template C 모달로 열리는 컴포넌트 타입
  */
-export class JdModalRef<R = any, D = any, C = any> {
+export class JdModalRef<
+  R = unknown,
+  D = unknown,
+  C = ComponentType | undefined,
+> {
   private modalId = -1;
-  private modalEntryComponent: EntryComponentType;
+  private modalEntryComponent!: EntryComponentType;
   private modalData: D | undefined;
   private modalResult: R | undefined;
-  private modalComponent: C | null = null;
-  private modalPanelStyle: any;
+  private modalComponent: C | undefined;
+  private modalPanelStyle: unknown;
   private modalOpenStrategy: OpenStrategy;
   private modalTransitionDuration = 240;
   private modalFloatingOpenMode = false;
@@ -32,9 +33,9 @@ export class JdModalRef<R = any, D = any, C = any> {
   private modalFullHeight = false;
   private modalPanelElement!: HTMLElement;
   private modalOpenedActiveElement!: OpenendActiveElement;
-  private modalUsedFocusTrap: boolean = true;
-  private openerSubject: Subject<ModalEvent> = new Subject();
-  private closedSubject: Subject<R | undefined> = new Subject();
+  private modalUsedFocusTrap = true;
+  private openerSubject = new Subject<ModalEvent<R, D, C>>();
+  private closedSubject = new Subject<R | undefined>();
   private attachedBeforeLeave = false;
   private isModalClose = false;
 
@@ -66,7 +67,7 @@ export class JdModalRef<R = any, D = any, C = any> {
   /**
    * 모달로 열리는 컴포넌트
    */
-  get component(): C | null {
+  get component(): C | undefined {
     return this.modalComponent;
   }
 
@@ -162,19 +163,19 @@ export class JdModalRef<R = any, D = any, C = any> {
     return this.isModalClose;
   }
 
-  assignModalData(data: ModalData<D>) {
+  assignModalData(data: ModalData<D, C>) {
     this.setComponent(data.component);
     this.setOpenStrategy(data.openStrategy || new StackNormal());
     this.setOverlayClose(data.overlayClose || false);
     this.setFloatingModel(data.floatingMode || false);
     this.setFullHeight(data.fullHeight || false);
-    this.setDisableShadow(!!data.disableShadow);
-    this.setDisableInitAutofocus(!!data.disableInitAutofocus);
+    this.setDisableShadow(Boolean(data.disableShadow));
+    this.setDisableInitAutofocus(Boolean(data.disableInitAutofocus));
     this.setDuration(data.duration || 240);
     this.setData(data.data);
     this.setPanelStyle(data.panelStyle);
     this.setOpenedActiveElement(data.openedActiveElement);
-    this.setUsedFocusTrap(data.usedFocusTrap === false ? false : true);
+    this.setUsedFocusTrap(data.usedFocusTrap !== false);
   }
 
   setId(id: number) {
@@ -185,7 +186,7 @@ export class JdModalRef<R = any, D = any, C = any> {
     this.modalData = data;
   }
 
-  setPanelStyle(styles: any) {
+  setPanelStyle(styles: CSSProperties | undefined) {
     this.modalPanelStyle = styles;
   }
 
@@ -206,19 +207,19 @@ export class JdModalRef<R = any, D = any, C = any> {
   }
 
   setFloatingModel(is: boolean) {
-    this.modalFloatingOpenMode = !!is;
+    this.modalFloatingOpenMode = Boolean(is);
   }
 
   setOverlayClose(is: boolean) {
-    this.modalOverlayClose = !!is;
+    this.modalOverlayClose = Boolean(is);
   }
 
   setDisableShadow(is: boolean) {
-    this.modalDisableShadow = !!is;
+    this.modalDisableShadow = Boolean(is);
   }
 
   setDisableInitAutofocus(is: boolean) {
-    this.modalDisableInitAutofocus = !!is;
+    this.modalDisableInitAutofocus = Boolean(is);
   }
 
   setFullHeight(is: boolean) {

@@ -1,10 +1,11 @@
-import { OpenStrategy } from './types';
+import type { OpenStrategy } from './types';
 
 export class StackRight implements OpenStrategy {
   shadow() {
     return {
       pivot: {
-        boxShadow: '-10px 0 10px 2px rgba(0, 0, 0, 0.04), -3px 0 3px rgba(0, 0, 0, 0.02)',
+        boxShadow:
+          '-10px 0 10px 2px rgba(0, 0, 0, 0.04), -3px 0 3px rgba(0, 0, 0, 0.02)',
       },
     };
   }

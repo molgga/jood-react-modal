@@ -1,13 +1,17 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Subscription } from 'rxjs';
-import { useJdModalService } from '../provider/context';
-import { ModalEventType, ModalEvent, ModalState } from '../core/types';
-import { JdModalRef } from '../core/jd-modal-ref';
+import { useJdModalService } from '../provider/use-jd-modal-service';
+import {
+  ModalEventType,
+  type ModalEvent,
+  type ModalState,
+} from '../core/types';
+import type { JdModalRef } from '../core/jd-modal-ref';
+import type { OpenStrategyStyleSet } from '../composition/open-strategy';
 import { createFocusTrap } from './use-jd-modal-focus-trap';
 
 /**
- * @interface
- * @property modalRef {JdModalRef} 훅 사용시 전달되어야할 JdModalRef
+ * modalRef JdModalRef 훅 사용시 전달되어야할 JdModalRef
  */
 interface JdModalEntryProps {
   modalRef: JdModalRef;
@@ -18,7 +22,6 @@ type RefElement = HTMLDivElement;
 
 /**
  * 모달의 Entry 컴포넌트 기능 훅.
- * @export
  */
 export const useJdModalEntry = (props: JdModalEntryProps) => {
   const modalService = useJdModalService();
@@ -45,19 +48,21 @@ export const useJdModalEntry = (props: JdModalEntryProps) => {
   const [focusTrap] = useState(() => createFocusTrap());
 
   const classes = useMemo(() => {
-    return {
-      fullHeight: fullHeight,
-    };
+    return { fullHeight };
   }, [fullHeight]);
 
-  const mergeStyle = (styleSet: any, mergeTarget: any) => {
+  const mergeStyle = (
+    styleSet: OpenStrategyStyleSet,
+    mergeTarget: OpenStrategyStyleSet
+  ) => {
     for (const key in mergeTarget) {
-      styleSet[key] = Object.assign(styleSet[key] || {}, mergeTarget[key]);
+      const k = key as keyof OpenStrategyStyleSet;
+      styleSet[k] = Object.assign(styleSet[k] || {}, mergeTarget[k]);
     }
   };
 
   const styles = useMemo(() => {
-    const styleSet: any = openStrategy.base(safeTiming);
+    const styleSet: OpenStrategyStyleSet = openStrategy.base(safeTiming);
     if (panelStyle) mergeStyle(styleSet, { pivot: panelStyle });
     if (!disableShadow) mergeStyle(styleSet, openStrategy.shadow());
     if (isOpening && !floatingMode)
@@ -93,7 +98,7 @@ export const useJdModalEntry = (props: JdModalEntryProps) => {
     }
   };
 
-  const onOverlayTouchMove = (evt: TouchEvent | any) => {
+  const onOverlayTouchMove = (evt: TouchEvent) => {
     if (enabledBlockBodyScroll) {
       evt.preventDefault();
     }
@@ -102,7 +107,7 @@ export const useJdModalEntry = (props: JdModalEntryProps) => {
   useEffect(() => {
     // console.log('useJdModalEntrySetup mounted');
     let listener: Subscription | undefined;
-    let animateTimer: any = null;
+    let animateTimer: NodeJS.Timeout;
     const historyStrategy = modalService.historyStrategy.createEntry({
       modalService,
       modalRef,
