@@ -1,0 +1,16 @@
+{
+  "name": "@draft/jd-modal",
+  "version": "0.0.0",
+  "private": true,
+  "peerDependencies": {
+    "react": "*",
+    "rxjs": "*",
+    "clsx": "*"
+  },
+  "devDependencies": {
+    "csstype": "*",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18"
+  }
+}
