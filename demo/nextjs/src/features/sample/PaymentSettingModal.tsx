@@ -1,8 +1,20 @@
 import { useState } from 'react';
-import { useJdModalRef } from '@draft/jd-modal';
+import {
+  useJdModalBeforeLeave,
+  useJdModalPullDownClose,
+  useJdModalRef,
+} from '@draft/jd-modal';
 import { SettingModalData, SettingModalResult } from './types';
 
 export function PaymentSettingModal() {
+  console.log('PaymentSettingModal');
+  // useJdModalPullDownClose();
+
+  // const { onPrevent: onBeforeLeaveCheck } = useJdModalBeforeLeave();
+  // onBeforeLeaveCheck(() => {
+  //   return true; // true - before leave
+  // });
+
   const modalRef = useJdModalRef<SettingModalResult, SettingModalData>();
   const [isChecked1, setIsChecked1] = useState(false);
   const [isChecked2, setIsChecked2] = useState(false);

@@ -24,6 +24,7 @@ export const useJdModalBeforeLeave = (props?: JdModalBeforeLeaveProps) => {
   const modalService = useJdModalService();
   const modalRef = useJdModalRef();
   const fnPrevent = useRef<FnPrevent>(() => false);
+  const fnDetachBeforeLeave = useRef<typeof detachBeforeLeave>();
   const holdBeforeLeave = useRef<boolean>(false);
 
   const setLeaveMessage = (message: string) => {
@@ -58,9 +59,11 @@ export const useJdModalBeforeLeave = (props?: JdModalBeforeLeaveProps) => {
           if (!confirm) {
             holdBeforeLeave.current = false;
           } else {
+            fnDetachBeforeLeave.current?.();
             modalRef.close();
           }
         } else {
+          fnDetachBeforeLeave.current?.();
           modalRef.close();
         }
       }
@@ -105,6 +108,7 @@ export const useJdModalBeforeLeave = (props?: JdModalBeforeLeaveProps) => {
 
   useEffect(() => {
     attachBeforeLeave();
+    fnDetachBeforeLeave.current = detachBeforeLeave;
     return () => {
       detachBeforeLeave();
     };
