@@ -8,7 +8,6 @@ type ClosedCallback<R = unknown> = (result?: R) => void;
  * 모달 닫힐때 결과 받기용
  */
 export const useJdModalInterceptClose = <R = unknown>() => {
-  let interceptModalRef: JdModalRef<R> | null = null;
   const closeListener = useRef<Subscription | null>(null);
   const fnClosed = useRef<ClosedCallback<R>>(() => false);
 
@@ -19,9 +18,8 @@ export const useJdModalInterceptClose = <R = unknown>() => {
   /**
    * modalRef 옵저버 등록
    */
-  const intercept = (modalRef: JdModalRef<R>) => {
-    interceptModalRef = modalRef;
-    closeListener.current = interceptModalRef
+  const intercept = (modalRef: JdModalRef) => {
+    closeListener.current = (modalRef as JdModalRef<R>)
       .observeClosed()
       .subscribe(handleClosed);
   };
