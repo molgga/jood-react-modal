@@ -37,6 +37,9 @@ export class JdModalRef<
   private openerSubject = new Subject<ModalEvent<R, D, C>>();
   private closedSubject = new Subject<R | undefined>();
   private attachedBeforeLeave = false;
+  private enabledHistoryStrategy = true;
+  private beforeLeaveMessage = '';
+  private checkBeforeLeavePrevent = () => false;
   private isModalClose = false;
 
   constructor() {
@@ -238,8 +241,15 @@ export class JdModalRef<
     this.modalUsedFocusTrap = is;
   }
 
-  attachBeforeLeave() {
+  attachBeforeLeave(option: {
+    enabledHistoryStrategy: boolean;
+    beforeLeaveMessage: string;
+    onPrevent: () => boolean;
+  }) {
     this.attachedBeforeLeave = true;
+    this.enabledHistoryStrategy = option.enabledHistoryStrategy;
+    this.beforeLeaveMessage = option.beforeLeaveMessage;
+    this.checkBeforeLeavePrevent = option.onPrevent;
   }
 
   detachBeforeLeave() {
@@ -252,9 +262,17 @@ export class JdModalRef<
   close(result?: R | undefined) {
     this.isModalClose = true;
     this.modalResult = result;
-    if (this.attachedBeforeLeave) {
+    if (this.enabledHistoryStrategy && this.attachedBeforeLeave) {
       history.back();
     } else {
+      if (!this.enabledHistoryStrategy && this.attachedBeforeLeave) {
+        if (this.checkBeforeLeavePrevent()) {
+          // eslint-disable-next-line no-alert -- resolve
+          if (!confirm(this.beforeLeaveMessage)) {
+            return;
+          }
+        }
+      }
       this.openerSubject.next({
         type: ModalEventType.CLOSE,
         modalRef: this,
