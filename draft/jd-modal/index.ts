@@ -1,6 +1,6 @@
 'use client';
-export * from './core';
-export * from './provider';
-export * from './hooks';
-export * from './composition/history-strategy';
-export * from './composition/open-strategy';
+export * from './src/core';
+export * from './src/provider';
+export * from './src/hooks';
+export * from './src/module/history-strategy';
+export * from './src/module/open-strategy';

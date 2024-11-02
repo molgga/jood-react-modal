@@ -2,8 +2,8 @@ import { useCallback, useEffect, useRef } from 'react';
 import { delay } from '../utils';
 import { useJdModalService } from '../provider/use-jd-modal-service';
 import { useJdModalRef } from '../provider/use-jd-modal-ref';
-import { historyState } from '../composition/history-strategy';
-import type { ModalPopStateEvent } from '../composition/history-strategy';
+import { historyState } from '../module/history-strategy';
+import type { ModalPopStateEvent } from '../module/history-strategy';
 
 type FnPrevent = () => boolean;
 

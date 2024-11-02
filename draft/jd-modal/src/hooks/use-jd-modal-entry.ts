@@ -7,7 +7,7 @@ import {
   type ModalState,
 } from '../core/types';
 import type { JdModalRef } from '../core/jd-modal-ref';
-import type { OpenStrategyStyleSet } from '../composition/open-strategy';
+import type { OpenStrategyStyleSet } from '../module/open-strategy';
 import { createFocusTrap } from './use-jd-modal-focus-trap';
 
 /**

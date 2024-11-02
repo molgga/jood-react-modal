@@ -1,9 +1,9 @@
 import { Subject, Subscription, type Observable } from 'rxjs';
-import { type OpenStrategy, StackNormal } from '../composition/open-strategy';
+import { type OpenStrategy, StackNormal } from '../module/open-strategy';
 import {
   HistoryStateStrategy,
   type HistoryStarategy,
-} from '../composition/history-strategy';
+} from '../module/history-strategy';
 import { JdModalRef } from './jd-modal-ref';
 import { toDefaultEntry } from './to-default-entry';
 import {

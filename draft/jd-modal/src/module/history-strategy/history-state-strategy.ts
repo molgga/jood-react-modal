@@ -35,10 +35,7 @@ export class HistoryStateStrategy implements HistoryStarategy {
       const isTop = modalService.isModalRefTop(modalRef.id);
       const { current } = historyState.getStateOfHistory(modalService.id);
       if (!isTop) return;
-      let useClose = false;
-      if (current && current < modalRef.id) {
-        useClose = true;
-      }
+      const useClose = (current ?? 0) < modalRef.id;
       if (useClose) {
         modalRef.close();
       }
