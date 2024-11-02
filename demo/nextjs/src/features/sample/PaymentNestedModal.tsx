@@ -4,10 +4,10 @@ import {
   useJdModalPullDownClose,
   useJdModalRef,
 } from '@draft/jd-modal';
-import { SettingModalData, SettingModalResult } from './types';
+import { NestedModalData, NestedModalResult } from './types';
 
-export function PaymentSettingModal() {
-  console.log('PaymentSettingModal');
+export function PaymentNestedModal() {
+  console.log('PaymentNestedModal');
   // useJdModalPullDownClose();
 
   // const { onPrevent: onBeforeLeaveCheck } = useJdModalBeforeLeave();
@@ -15,7 +15,7 @@ export function PaymentSettingModal() {
   //   return true; // true - before leave
   // });
 
-  const modalRef = useJdModalRef<SettingModalResult, SettingModalData>();
+  const modalRef = useJdModalRef<NestedModalResult, NestedModalData>();
   const [isChecked1, setIsChecked1] = useState(false);
   const [isChecked2, setIsChecked2] = useState(false);
 
@@ -24,7 +24,7 @@ export function PaymentSettingModal() {
   };
 
   return (
-    <div style={{ minWidth: '320px' }}>
+    <div style={{ width: '320px' }}>
       setting
       <div style={{ padding: '10px' }}>
         <label>

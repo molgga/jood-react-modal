@@ -3,16 +3,16 @@ import {
   useJdModalInterceptClose,
   StackRight,
 } from '@draft/jd-modal';
-import { PaymentSettingModal } from './PaymentSettingModal';
-import type { PaymentModalData, PaymentModalResult } from './types';
+import { PaymentNestedModal } from './PaymentNestedModal';
+import type { NestedModalData, NestedModalResult } from './types';
 
-export const usePaymentSettingModal = () => {
+export const usePaymentNestedModal = () => {
   const modalService = useJdModalService();
-  const interceptClose = useJdModalInterceptClose<PaymentModalResult>();
-  const open = (data?: PaymentModalData) => {
+  const interceptClose = useJdModalInterceptClose<NestedModalResult>();
+  const open = (data?: NestedModalData) => {
     const modalRef = modalService.open({
       data,
-      component: <PaymentSettingModal />,
+      component: <PaymentNestedModal />,
       openStrategy: new StackRight(),
       overlayClose: false,
     });

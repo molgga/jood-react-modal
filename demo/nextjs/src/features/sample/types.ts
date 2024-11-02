@@ -5,9 +5,9 @@ export interface PaymentModalData {
 export interface PaymentModalResult {
   testResult?: string;
 }
-export interface SettingModalData {}
+export interface NestedModalData {}
 
-export interface SettingModalResult {
+export interface NestedModalResult {
   isChecked1?: boolean;
   isChecked2?: boolean;
 }
