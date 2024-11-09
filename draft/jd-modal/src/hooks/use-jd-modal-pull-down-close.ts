@@ -37,7 +37,9 @@ const createState = () => {
 /**
  * 모달 아래로 드래그 해서 닫기
  */
-export const useJdModalPullDownClose = (config: DragConfig = {}) => {
+export const useJdModalPullDownClose = <T extends HTMLElement>(
+  config: DragConfig = {}
+) => {
   const {
     initialize = true,
     dragResistance = 1,
@@ -48,7 +50,7 @@ export const useJdModalPullDownClose = (config: DragConfig = {}) => {
   const moveEventOptions = { passive: false };
   const modalService = useJdModalService();
   const modalRef = useJdModalRef();
-  const refScrollContainer = useRef<HTMLElement | null>(null);
+  const refScrollContainer = useRef<T | null>(null);
   const refPanelElement = useRef<HTMLElement | null>(null);
   const modalListener = useRef<Subscription | null>(null);
   const [state] = useState<StateType>(() => createState());
@@ -251,11 +253,11 @@ export const useJdModalPullDownClose = (config: DragConfig = {}) => {
   };
 
   // 강제로 스크롤 컨테이너를 바꿔야 하는 경우가 있을 때 사용.
-  const setScrollContainer = (element: HTMLElement) => {
+  const setScrollContainer = (element: T) => {
     refScrollContainer.current = element;
   };
 
-  const changeScrollContainer = (element: HTMLElement) => {
+  const changeScrollContainer = (element: T) => {
     if (refScrollContainer.current) {
       destroy();
     }
