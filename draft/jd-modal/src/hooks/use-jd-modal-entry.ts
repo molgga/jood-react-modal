@@ -47,9 +47,9 @@ export const useJdModalEntry = (props: JdModalEntryProps) => {
   const [modalLength, setModalLength] = useState(modalService.modals?.length);
   const [focusTrap] = useState(() => createFocusTrap());
 
-  const classes = useMemo(() => {
+  const classes = (() => {
     return { fullHeight };
-  }, [fullHeight]);
+  })();
 
   const mergeStyle = (
     styleSet: OpenStrategyStyleSet,

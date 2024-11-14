@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Subscription } from 'rxjs';
 import { useJdModalService } from '../provider/use-jd-modal-service';
 import type { ModalState } from '../core/types';
@@ -9,9 +9,9 @@ export const useJdModalAppender = () => {
   const [modalRefs, setModalRefs] = useState<JdModalRef[]>(modalService.modals);
   const [isEmptied, setIsEmptied] = useState(true);
 
-  const classes = useMemo(() => {
+  const classes = (() => {
     return { isEmptied: Boolean(isEmptied) };
-  }, [isEmptied]);
+  })();
 
   useEffect(() => {
     let animateTimer: NodeJS.Timeout | undefined;
