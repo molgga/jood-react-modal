@@ -10,9 +10,13 @@ type ClosedCallback<R = unknown> = (result?: R) => void;
 export const useJdModalInterceptClose = <R = unknown>() => {
   const closeListener = useRef<Subscription | null>(null);
   const fnClosed = useRef<ClosedCallback<R>>(() => false);
+  const fnClosePromiseResolver = useRef<ClosedCallback<R>>();
 
   const handleClosed = (result?: R) => {
     fnClosed.current(result);
+    if (fnClosePromiseResolver.current) {
+      fnClosePromiseResolver.current(result);
+    }
   };
 
   /**
@@ -22,6 +26,15 @@ export const useJdModalInterceptClose = <R = unknown>() => {
     closeListener.current = (modalRef as JdModalRef<R>)
       .observeClosed()
       .subscribe(handleClosed);
+  };
+
+  /**
+   * 닫힘 promise
+   */
+  const promise = () => {
+    return new Promise<R>((resolve) => {
+      fnClosePromiseResolver.current = resolve as ClosedCallback<R>;
+    });
   };
 
   /**
@@ -46,6 +59,7 @@ export const useJdModalInterceptClose = <R = unknown>() => {
 
   return {
     intercept,
+    promise,
     onClosed,
   };
 };
