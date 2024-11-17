@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useRef } from 'react';
-import { delay } from '../utils';
-import { useJdModalService } from '../provider/use-jd-modal-service';
-import { useJdModalRef } from '../provider/use-jd-modal-ref';
 import { historyState } from '../module/history-strategy';
 import type { ModalPopStateEvent } from '../module/history-strategy';
+import { useJdModalRef } from '../provider/use-jd-modal-ref';
+import { useJdModalService } from '../provider/use-jd-modal-service';
+import { delay } from '../utils';
 
 type FnPrevent = () => boolean;
 
@@ -21,6 +21,7 @@ interface JdModalBeforeLeaveProps {
  * - historyStrategy 사용 여부에 처리가 다르다.
  *  - true 인 경우 해당 훅에서 history 이벤트 핸들러에서 confirm 체크를 한다.
  *  - false 인 경우 modalRef 에서 close 전처리로 confirm 체크를 한다.
+ * - pullDownClose 로 닫는 경우에는 beforeLeave 는 해제된다.
  */
 export const useJdModalBeforeLeave = (props?: JdModalBeforeLeaveProps) => {
   let { leaveMessage = '모달을 닫으시겠습니까?' } = props || {};
@@ -57,7 +58,6 @@ export const useJdModalBeforeLeave = (props?: JdModalBeforeLeaveProps) => {
           evt._preventModalClose = true;
           history.forward(); // 브라우저는 이미 뒤로가기가 되어서 다시 forwad 시킴.
           await delay(100);
-          // eslint-disable-next-line no-alert -- resolve
           const confirm = window.confirm(leaveMessage); // async 지원시 사용 방법이 복잡해져서 기본 confirm 사용
           if (!confirm) {
             holdBeforeLeave.current = false;
@@ -102,6 +102,15 @@ export const useJdModalBeforeLeave = (props?: JdModalBeforeLeaveProps) => {
       enabledHistoryStrategy,
       beforeLeaveMessage: leaveMessage,
       onPrevent: () => fnPrevent.current?.(),
+      forceDetachBeforeLeave: () => {
+        try {
+          window.removeEventListener('popstate', onBeforeUnloadModal);
+          window.removeEventListener('beforeunload', onBeforeUnloadBrowser);
+        } catch (err) {
+          //
+          console.warn(err);
+        }
+      },
     });
   }, [
     modalRef,

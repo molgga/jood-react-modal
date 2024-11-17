@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Subscription } from 'rxjs';
-import { useJdModalService } from '../provider/use-jd-modal-service';
 import { useJdModalRef } from '../provider/use-jd-modal-ref';
+import { useJdModalService } from '../provider/use-jd-modal-service';
 
 interface DragConfig {
   initialize?: boolean; // 자동 초기화
@@ -12,8 +12,8 @@ interface DragConfig {
 
 type StateType = ReturnType<
   typeof createState & {
-    blindRequestFrame: NodeJS.Timeout | number;
-    releaseRequestFrame: NodeJS.Timeout | number;
+    blindRequestFrame: number;
+    releaseRequestFrame: number;
   }
 >;
 
@@ -37,7 +37,7 @@ const createState = () => {
 /**
  * 모달 아래로 드래그 해서 닫기
  */
-export const useJdModalPullDownClose = <T extends HTMLElement>(
+export const useJdModalPullDownClose = <T extends HTMLDivElement>(
   config: DragConfig = {}
 ) => {
   const {
@@ -112,6 +112,7 @@ export const useJdModalPullDownClose = <T extends HTMLElement>(
       (triggerReleaseGap - (Date.now() - startStamp)) / triggerReleaseMultiple;
     const momentum = Math.max(1, triggerY) * moveY;
     if (triggerReleaseMinY < momentum) {
+      modalRef.detachBeforeLeave();
       modalRef.close();
     } else {
       releaseFrameClear();

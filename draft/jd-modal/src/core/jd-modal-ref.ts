@@ -1,12 +1,12 @@
 import type { CSSProperties } from 'react';
 import { Subject } from 'rxjs';
-import { StackNormal, type OpenStrategy } from '../module/open-strategy';
+import { type OpenStrategy, StackNormal } from '../module/open-strategy';
 import {
-  ModalEventType,
-  type ModalEvent,
-  type ModalData,
   type ComponentType,
   type EntryComponentType,
+  type ModalData,
+  type ModalEvent,
+  ModalEventType,
   type OpenendActiveElement,
 } from './types';
 
@@ -40,6 +40,7 @@ export class JdModalRef<
   private enabledHistoryStrategy = true;
   private beforeLeaveMessage = '';
   private checkBeforeLeavePrevent = () => false;
+  private forceDetachBeforeLeave = () => {};
   private isModalClose = false;
 
   constructor() {
@@ -57,7 +58,7 @@ export class JdModalRef<
    * 모달로 전달하는 데이터
    */
   get data() {
-    return this.modalData;
+    return this.modalData as D;
   }
 
   /**
@@ -245,15 +246,22 @@ export class JdModalRef<
     enabledHistoryStrategy: boolean;
     beforeLeaveMessage: string;
     onPrevent: () => boolean;
+    forceDetachBeforeLeave: () => void;
   }) {
     this.attachedBeforeLeave = true;
     this.enabledHistoryStrategy = option.enabledHistoryStrategy;
     this.beforeLeaveMessage = option.beforeLeaveMessage;
     this.checkBeforeLeavePrevent = option.onPrevent;
+    this.forceDetachBeforeLeave = option.forceDetachBeforeLeave;
   }
 
   detachBeforeLeave() {
     this.attachedBeforeLeave = false;
+    this.forceDetachBeforeLeave?.();
+  }
+
+  isBeforeLeavePrevent() {
+    return this.checkBeforeLeavePrevent?.();
   }
 
   /**
@@ -266,8 +274,7 @@ export class JdModalRef<
       history.back();
     } else {
       if (!this.enabledHistoryStrategy && this.attachedBeforeLeave) {
-        if (this.checkBeforeLeavePrevent()) {
-          // eslint-disable-next-line no-alert -- resolve
+        if (this.isBeforeLeavePrevent()) {
           if (!confirm(this.beforeLeaveMessage)) {
             return;
           }
