@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Subscription } from 'rxjs';
-import { useJdModalService } from '../provider/use-jd-modal-service';
-import type { ModalState } from '../core/types';
 import type { JdModalRef } from '../core/jd-modal-ref';
+import type { ModalState } from '../core/types';
+import { useJdModalService } from '../provider/use-jd-modal-service';
 
 export const useJdModalAppender = () => {
   const modalService = useJdModalService();

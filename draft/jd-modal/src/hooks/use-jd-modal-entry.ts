@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Subscription } from 'rxjs';
-import { useJdModalService } from '../provider/use-jd-modal-service';
+import type { JdModalRef } from '../core/jd-modal-ref';
 import {
-  ModalEventType,
   type ModalEvent,
+  ModalEventType,
   type ModalState,
 } from '../core/types';
-import type { JdModalRef } from '../core/jd-modal-ref';
 import type { OpenStrategyStyleSet } from '../module/open-strategy';
+import { useJdModalService } from '../provider/use-jd-modal-service';
 import { createFocusTrap } from './use-jd-modal-focus-trap';
 
 /**

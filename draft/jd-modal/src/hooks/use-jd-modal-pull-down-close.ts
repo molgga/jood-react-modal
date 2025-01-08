@@ -12,8 +12,8 @@ interface DragConfig {
 
 type StateType = ReturnType<
   typeof createState & {
-    blindRequestFrame: number;
-    releaseRequestFrame: number;
+    blindRequestFrame: NodeJS.Timeout | number;
+    releaseRequestFrame: NodeJS.Timeout | number;
   }
 >;
 
@@ -282,10 +282,12 @@ function useInitialEffect(
   destroy: () => void
 ) {
   useEffect(() => {
+    let timer: NodeJS.Timeout | undefined;
     if (initialize) {
-      setTimeout(init, 1);
+      timer = setTimeout(init, 1);
     }
     return () => {
+      clearTimeout(timer);
       destroy();
     };
   }, [initialize, init, destroy]);

@@ -1,4 +1,4 @@
-import type { Component, CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, Component, ReactNode } from 'react';
 import type { OpenStrategy } from '../module/open-strategy';
 import type { JdModalRef } from './jd-modal-ref';
 
