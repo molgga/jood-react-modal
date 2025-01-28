@@ -173,8 +173,8 @@ export class JdModalRef<
     this.setOverlayClose(data.overlayClose || false);
     this.setFloatingModel(data.floatingMode || false);
     this.setFullHeight(data.fullHeight || false);
-    this.setDisableShadow(Boolean(data.disableShadow));
-    this.setDisableInitAutofocus(Boolean(data.disableInitAutofocus));
+    this.setDisableShadow(data.disableShadow ?? true);
+    this.setDisableInitAutofocus(data.disableInitAutofocus ?? false);
     this.setDuration(data.duration || 240);
     this.setData(data.data);
     this.setPanelStyle(data.panelStyle);
